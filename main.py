@@ -5,6 +5,21 @@ import requests
 from bottle import response
 from tkinter import messagebox as mb
 import pyperclip
+import json
+import os
+
+history_file = "upload_history.json"
+
+
+def save_history(filepath, link):
+    history = []
+    if os.path.exists(history_file):
+        with open(history_file, "r") as f:
+            history = json.load(f)
+    history.append({"filepath": os.path.basename(filepath), "download_link": link})
+    with open(history_file, "w") as f:
+        json.dump(history, f, indent=4)
+
 
 def upload():
     try:
@@ -18,6 +33,7 @@ def upload():
                 entry.delete(0, END)
                 entry.insert(0, link)
                 pyperclip.copy(link)
+                save_history(filepath, link)
                 mb.showinfo("Ссылка скопирована", f"Ссылка {link} успешно скопирована")
     except Exception as e:
         mb.showerror("Ошибка", f"Произошла ошибка {e}")
