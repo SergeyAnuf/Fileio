@@ -10,21 +10,21 @@ import os
 
 history_file = "upload_history.json"
 
-def save_history(file_path, link):
+def save_history(filepath, link):
     history = []
     if os.path.exists(history_file):
         with open(history_file, "r") as f:
             history = json.load(f)
-    history.append({"file_path": os.path.basename(filepath), "download_link": link})
+    history.append({"filepath": os.path.basename(filepath), "download_link": link})
     with open(history_file, "w") as f:
         json.dump(history, f, indent=4)
 
 
 def upload():
     try:
-        file_path = fd.askopenfilename()
-        if file_path:
-            with open(file_path, "rb") as f:
+        filepath = fd.askopenfilename()
+        if filepath:
+            with open(filepath, "rb") as f:
                 files = {"file": f}
                 response = requests.post("https://file.io", files=files)
                 response.raise_for_status()
@@ -32,7 +32,7 @@ def upload():
                 entry.delete(0, END)
                 entry.insert(0, link)
                 pyperclip.copy(link)
-                save_history(file_path, link)
+                save_history(filepath, link)
                 mb.showinfo("Ссылка скопирована", f"Ссылка {link} успешно скопирована")
     except Exception as e:
         mb.showerror("Ошибка", f"Произошла ошибка {e}")
@@ -55,7 +55,7 @@ def show_history():
     with open(history_file, "r") as f:
         history = json.load(f)
         for item in history:
-            files_listbox.insert(END, item["file_path"])
+            files_listbox.insert(END, item["filepath"])
             links_listbox.insert(END, item["download_link"])
 
 
